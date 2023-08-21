@@ -1,0 +1,34 @@
+const imageInput = document.getElementById("imageInput");
+const convertBtn = document.getElementById("convertBtn");
+const outputImage = document.getElementById("outputImage");
+
+convertBtn.addEventListener("click", () => {
+    if (imageInput.files.length > 0) {
+        const selectedImage = imageInput.files[0];
+        const reader = new FileReader();
+
+        reader.onload = function(event) {
+            const imageDataURL = event.target.result;
+            const image = new Image();
+            
+            image.onload = function() {
+                const canvas = document.createElement("canvas");
+                const context = canvas.getContext("2d");
+
+                canvas.width = image.width;
+                canvas.height = image.height;
+                context.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+                canvas.toBlob(blob => {
+                    const webpURL = URL.createObjectURL(blob);
+                    outputImage.src = webpURL;
+                    outputImage.style.display = "block";
+                }, "image/webp");
+            };
+            
+            image.src = imageDataURL;
+        };
+        
+        reader.readAsDataURL(selectedImage);
+    }
+});
